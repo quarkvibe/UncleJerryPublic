@@ -8,7 +8,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="" # Will be set by user input
+REPO_URL="git@github.com:quarkvibe/UncleJerryBlueprintAnalyzer.git" # Default repository URL
 
 echo -e "${YELLOW}Uncle Jerry Blueprint Analyzer - GitHub Push Script${NC}"
 echo
