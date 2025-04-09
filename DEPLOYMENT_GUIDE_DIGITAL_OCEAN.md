@@ -1,171 +1,181 @@
-# Deployment Guide for Uncle Jerry Blueprint Analyzer on DigitalOcean
+# Uncle Jerry Blueprint Analyzer - DigitalOcean Deployment Guide
 
-This guide provides step-by-step instructions for deploying the Uncle Jerry Blueprint Analyzer application on a DigitalOcean Droplet.
+This guide will walk you through the process of deploying the Uncle Jerry Blueprint Analyzer application on a DigitalOcean Droplet.
 
 ## Prerequisites
 
 1. A DigitalOcean account
-2. A domain name that you can point to your DigitalOcean Droplet
-3. An Anthropic API key for Claude
+2. SSH access to your droplet
+3. Your GitHub repository with the application code
+4. Anthropic API key for Claude integration
 
-## Step 1: Create a DigitalOcean Droplet
+## Deployment Options
 
-1. Log in to your DigitalOcean account
-2. Click "Create" > "Droplets"
-3. Choose an image: Ubuntu 22.04 LTS
-4. Choose a plan: Basic (at least 2GB RAM recommended)
-5. Choose a datacenter region close to your target users
-6. Add your SSH key or create a password
-7. Click "Create Droplet"
+There are two ways to deploy the application:
 
-## Step 2: Configure DNS
+1. **Git-based deployment (Recommended)**: Clone the repository directly on the server
+2. **Direct file transfer**: Use rsync to copy files from your local machine
 
-1. In the DigitalOcean control panel, go to "Networking" > "Domains"
-2. Add your domain name
-3. Create an A record pointing your domain (e.g., unclejerry.ai) to your Droplet's IP address
-4. Create another A record for www subdomain (e.g., www.unclejerry.ai) pointing to the same IP
+## Step 1: Prepare Your Droplet
 
-## Step 3: Connect to Your Droplet
+If you haven't already created a droplet, create one with these specifications:
+
+- **Distribution**: Ubuntu 20.04 or newer
+- **Plan**: Basic
+- **CPU**: At least 2GB RAM / 1 CPU
+- **Authentication**: SSH keys (recommended)
+
+## Step 2: Set Up SSH Access
+
+Make sure you have SSH access to your droplet. If you're using SSH keys, you should be able to connect with:
 
 ```bash
 ssh root@your-droplet-ip
 ```
 
-## Step 4: Clone the Repository
+## Step 3: Configure GitHub SSH Keys (For Git-based deployment)
 
-```bash
-git clone https://github.com/your-username/uncle-jerry-blueprint-analyzer.git
-cd uncle-jerry-blueprint-analyzer
-```
+If using the Git-based deployment method, make sure your droplet has SSH access to your GitHub repository:
 
-## Step 5: Set Environment Variables
+1. On your droplet, generate an SSH key:
+   ```bash
+   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+   ```
 
-Set your Anthropic API key:
+2. Add the public key to your GitHub account:
+   ```bash
+   cat ~/.ssh/id_rsa.pub
+   ```
+   Copy the output and add it to your GitHub account's SSH keys in settings.
 
-```bash
-export ANTHROPIC_API_KEY=your_api_key_here
-```
+3. Test the connection:
+   ```bash
+   ssh -T git@github.com
+   ```
 
-To make this persistent, add it to your `.bashrc` file:
+## Step 4: Run the Deployment Script
 
-```bash
-echo "export ANTHROPIC_API_KEY=your_api_key_here" >> ~/.bashrc
-source ~/.bashrc
-```
+The easiest way to deploy is to use the included `deploy-to-droplet.sh` script:
 
-## Step 6: Run the Deployment Script
+1. Make the script executable if it isn't already:
+   ```bash
+   chmod +x deploy-to-droplet.sh
+   ```
 
-Make the deployment script executable and run it:
+2. Run the script:
+   ```bash
+   ./deploy-to-droplet.sh
+   ```
 
-```bash
-chmod +x deploy.sh
-./deploy.sh
-```
+3. Follow the prompts to enter your droplet's IP address and confirm deployment options.
 
-The script will:
-1. Check for necessary environment variables
-2. Install Docker and other required dependencies
-3. Build the frontend
-4. Prompt you for your domain name
-5. Ask if you want to set up SSL certificates
-6. Configure Apache with the appropriate settings
-7. Set up firewall rules
-8. Start all Docker containers
+## Step 5: Configure Environment Variables
 
-## Step 7: Verify the Deployment
+After deployment, you'll need to configure your environment variables:
 
-After the script completes, access your application at:
-- HTTP: http://your-domain.com
-- HTTPS: https://your-domain.com (if SSL was configured)
+1. SSH into your droplet
+2. Edit the backend .env file:
+   ```bash
+   nano /var/www/uncle-jerry/backend/.env
+   ```
 
-You can also access MongoDB Express at:
-- HTTP: http://your-domain.com/mongo
-- HTTPS: https://your-domain.com/mongo (if SSL was configured)
+3. Update the following variables at minimum:
+   - `ANTHROPIC_API_KEY`: Your Claude API key
+   - `JWT_SECRET`: A secure random string for JWT token generation
+   - `MONGODB_URI`: The MongoDB connection string (if using a different MongoDB instance)
+   - `CORS_ORIGIN`: Your frontend URL (if different from localhost)
+
+4. Save and exit the editor
+
+## Step 6: Set Up Domain Name (Optional)
+
+If you want to use a domain name:
+
+1. Add an A record in your domain's DNS settings pointing to your droplet's IP address
+2. Update the Apache configuration:
+   ```bash
+   sudo nano /etc/apache2/sites-available/uncle-jerry.conf
+   ```
+
+3. Replace `ServerName blueprint.local` with your domain name
+4. Reload Apache:
+   ```bash
+   sudo systemctl reload apache2
+   ```
+
+## Step 7: Set Up SSL (Recommended for Production)
+
+For HTTPS, use Let's Encrypt:
+
+1. Install Certbot:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install certbot python3-certbot-apache
+   ```
+
+2. Run Certbot:
+   ```bash
+   sudo certbot --apache -d yourdomain.com -d www.yourdomain.com
+   ```
+
+3. Follow the prompts to complete the SSL setup
+
+## Step 8: Verify Deployment
+
+1. Restart the backend service:
+   ```bash
+   cd /var/www/uncle-jerry/backend
+   pm2 restart uncle-jerry-backend
+   ```
+
+2. Check that Apache is running:
+   ```bash
+   sudo systemctl status apache2
+   ```
+
+3. Visit your domain or IP address in a browser to access the application
 
 ## Troubleshooting
 
-### SSL Certificate Issues
+If you encounter issues:
 
-If you have problems with SSL certificates:
+1. Check Apache error logs:
+   ```bash
+   sudo tail -f /var/log/apache2/error.log
+   ```
 
-```bash
-# Check certificate status
-certbot certificates
+2. Check the backend application logs:
+   ```bash
+   pm2 logs uncle-jerry-backend
+   ```
 
-# Try obtaining certificates manually
-certbot certonly --standalone -d your-domain.com -d www.your-domain.com
-```
+3. Verify MongoDB is running:
+   ```bash
+   sudo systemctl status mongod
+   ```
 
-### Docker Container Issues
-
-If any containers aren't running properly:
-
-```bash
-# Check container status
-docker ps -a
-
-# View container logs
-docker logs uncle-jerry-apache
-docker logs uncle-jerry-backend
-docker logs uncle-jerry-mongodb
-
-# Restart containers
-docker-compose -f docker-compose-apache.yml restart
-```
-
-### Firewall Issues
-
-If you can't access your application:
-
-```bash
-# Check firewall status
-ufw status
-
-# Ensure ports are open
-ufw allow 80/tcp
-ufw allow 443/tcp
-```
+4. Check firewall settings:
+   ```bash
+   sudo ufw status
+   ```
+   Make sure ports 80 (HTTP) and 443 (HTTPS) are open
 
 ## Maintenance
 
-### Updating the Application
+- To update the application, run the deployment script again
+- To restart the backend service:
+  ```bash
+  pm2 restart uncle-jerry-backend
+  ```
+- Monitor your application with:
+  ```bash
+  pm2 monit
+  ```
 
-To update the application:
+## Security Considerations
 
-```bash
-cd /home/quarkvibe/uncle-jerry-blueprint-analyzer
-git pull
-./deploy.sh
-```
-
-### SSL Certificate Renewal
-
-SSL certificates are set to auto-renew via cron job, but you can manually renew with:
-
-```bash
-certbot renew
-docker restart uncle-jerry-apache
-```
-
-### Database Backup
-
-To back up your MongoDB data:
-
-```bash
-# Create a backup
-docker exec -it uncle-jerry-mongodb mongodump --out /data/db/backup
-
-# Copy the backup to the host
-docker cp uncle-jerry-mongodb:/data/db/backup ./mongodb-backup
-```
-
-## Security Recommendations
-
-1. Set a strong password for MongoDB Express in docker-compose-apache.yml
-2. Consider restricting access to the /mongo path in Apache configuration
-3. Keep all system packages updated:
-   ```bash
-   apt update && apt upgrade -y
-   ```
-4. Use SSH keys instead of passwords for server access
-5. Consider setting up a firewall to restrict access to only necessary ports
+- Consider setting up a firewall with `ufw`
+- Use strong passwords for all services
+- Keep your server updated with `apt update` and `apt upgrade`
+- Consider disabling root SSH access
+- Implement rate limiting for API endpoints

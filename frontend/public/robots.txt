@@ -1,3 +1,5 @@
 # https://www.robotstxt.org/robotstxt.html
+# English language robots.txt
 User-agent: *
-Disallow:
+Allow: /
+Sitemap: https://blueprint-analyzer.com/sitemap.xml
