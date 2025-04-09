@@ -1,0 +1,241 @@
+// UncleJerry.scss
+
+// Variables
+$primary-color: #d6bc8a;
+$secondary-color: #5e3a1c;
+$skin-color: #e9b587;
+$background-color: #f5e8d0;
+$bubble-color: #ffffff;
+$text-color: #333333;
+
+.uncle-jerry-container {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  font-family: 'Arial', sans-serif;
+  
+  // Size variations
+  &.uncle-jerry--small {
+    width: 200px;
+    
+    .uncle-jerry__character {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .uncle-jerry__speech-bubble {
+      max-width: 150px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  &.uncle-jerry--medium {
+    width: 300px;
+    
+    .uncle-jerry__character {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .uncle-jerry__speech-bubble {
+      max-width: 220px;
+      font-size: 1rem;
+    }
+  }
+  
+  &.uncle-jerry--large {
+    width: 400px;
+    
+    .uncle-jerry__character {
+      width: 160px;
+      height: 160px;
+    }
+    
+    .uncle-jerry__speech-bubble {
+      max-width: 300px;
+      font-size: 1.2rem;
+    }
+  }
+  
+  // Position variations
+  &.uncle-jerry--left {
+    justify-content: flex-start;
+    flex-direction: row;
+    
+    .uncle-jerry__speech-bubble {
+      margin-left: 1rem;
+      
+      &:before {
+        left: -10px;
+        border-right-color: $bubble-color;
+      }
+    }
+  }
+  
+  &.uncle-jerry--right {
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    
+    .uncle-jerry__speech-bubble {
+      margin-right: 1rem;
+      
+      &:before {
+        right: -10px;
+        border-left-color: $bubble-color;
+      }
+    }
+  }
+  
+  &.uncle-jerry--center {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    
+    .uncle-jerry__speech-bubble {
+      margin-top: 1rem;
+      
+      &:before {
+        top: -10px;
+        border-bottom-color: $bubble-color;
+      }
+    }
+  }
+}
+
+.uncle-jerry {
+  display: flex;
+  align-items: center;
+  
+  // Mood variations affecting the container
+  &.uncle-jerry--happy {
+    .uncle-jerry-svg {
+      animation: slight-bounce 4s infinite ease-in-out;
+    }
+  }
+  
+  &.uncle-jerry--thinking {
+    .uncle-jerry-svg {
+      animation: slow-tilt 4s infinite ease-in-out;
+    }
+  }
+  
+  &.uncle-jerry--explaining {
+    .uncle-jerry-svg {
+      animation: explaining-gesture 3s infinite ease-in-out;
+    }
+  }
+  
+  &.uncle-jerry--surprised {
+    .uncle-jerry-svg {
+      animation: surprised-shake 0.5s ease-in-out;
+    }
+  }
+}
+
+.uncle-jerry__character {
+  position: relative;
+  z-index: 2;
+  
+  .uncle-jerry-svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+}
+
+.uncle-jerry__speech-bubble {
+  position: relative;
+  background-color: $bubble-color;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    border: 10px solid transparent;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-color;
+    line-height: 1.4;
+  }
+}
+
+.uncle-jerry__loading-dots {
+  display: inline-block;
+  animation: loading-dots 1.5s infinite;
+}
+
+.uncle-jerry__cursor {
+  display: inline-block;
+  animation: cursor-blink 0.8s infinite;
+}
+
+// Animations
+@keyframes slight-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes slow-tilt {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes explaining-gesture {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes surprised-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes loading-dots {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cursor-blink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

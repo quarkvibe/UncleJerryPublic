@@ -1,0 +1,265 @@
+.uncle-jerry-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Size variants */
+.uncle-jerry--small {
+  max-width: 300px;
+}
+
+.uncle-jerry--medium {
+  max-width: 500px;
+}
+
+.uncle-jerry--large {
+  max-width: 700px;
+}
+
+/* Position variants */
+.uncle-jerry--left {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.uncle-jerry--right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.uncle-jerry--center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.uncle-jerry-svg {
+  width: 100%;
+  height: auto;
+}
+
+.uncle-jerry__speech-bubble {
+  position: relative;
+  background-color: white;
+  border: 2px solid #0d47a1;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.uncle-jerry__speech-bubble:before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: -20px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #0d47a1 transparent;
+}
+
+.uncle-jerry__cursor {
+  display: inline-block;
+  animation: blink 1s infinite;
+}
+
+.uncle-jerry__loading-dots {
+  display: inline-block;
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes loadingDots {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Character base styles */
+.uncle-jerry-character {
+  cursor: pointer;
+}
+
+.body {
+  fill: #1565c0; /* Blue work shirt */
+  stroke: #0d47a1;
+  stroke-width: 2;
+}
+
+.head {
+  fill: #ffe0b2; /* Light skin tone */
+  stroke: #ffcc80;
+  stroke-width: 1;
+  transition: transform 0.3s ease;
+}
+
+.eye {
+  fill: #263238;
+  transition: all 0.2s ease;
+}
+
+.eyes-closed .eye {
+  transform: scaleY(0.1);
+}
+
+.mouth {
+  fill: none;
+  stroke: #37474f;
+  stroke-width: 2;
+  transition: d 0.2s ease;
+}
+
+.hat {
+  fill: #fdd835; /* Yellow hard hat */
+  stroke: #f9a825;
+  stroke-width: 2;
+}
+
+.hat-base {
+  fill: #fdd835;
+  stroke: #f9a825;
+  stroke-width: 1;
+}
+
+.beard {
+  fill: #90a4ae; /* Gray beard */
+  stroke: #78909c;
+  stroke-width: 1;
+}
+
+.left-arm, .right-arm {
+  fill: #1565c0;
+  stroke: #0d47a1;
+  stroke-width: 2;
+  transform-origin: top;
+  transition: transform 0.3s ease;
+}
+
+.tool-belt {
+  fill: #795548; /* Brown belt */
+  stroke: #5d4037;
+  stroke-width: 1;
+}
+
+.belt-buckle {
+  fill: #ffd600;
+  stroke: #ffab00;
+  stroke-width: 1;
+}
+
+.tool-pocket {
+  fill: #8d6e63;
+  stroke: #6d4c41;
+  stroke-width: 1;
+}
+
+/* Interaction points */
+.interaction-point {
+  fill: rgba(33, 150, 243, 0.5);
+  stroke: #2196f3;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.interaction-point:hover {
+  fill: rgba(33, 150, 243, 0.8);
+  transform: scale(1.2);
+}
+
+/* Progress indicators */
+.progress-bar {
+  fill: #e0e0e0;
+  stroke: #bdbdbd;
+  stroke-width: 1;
+}
+
+.progress-fill {
+  fill: #4caf50;
+  transition: height 0.5s ease, y 0.5s ease;
+}
+
+.progress-label {
+  fill: #616161;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+}
+
+/* Speech bubble */
+.speech-bubble {
+  position: absolute;
+  top: 50px;
+  left: 250px;
+  background-color: white;
+  border: 2px solid #0d47a1;
+  border-radius: 10px;
+  padding: 15px;
+  max-width: 250px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.speech-bubble:before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 20px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent #0d47a1 transparent transparent;
+}
+
+.speech-bubble p {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.continue-button {
+  background-color: #fdd835;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.continue-button:hover {
+  background-color: #ffb300;
+  transform: scale(1.05);
+}
+
+/* Breathing animation for idle state */
+@keyframes breathing {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+.uncle-jerry-character {
+  animation: breathing 4s infinite ease-in-out;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .speech-bubble {
+    left: auto;
+    top: auto;
+    bottom: -150px;
+    width: 90%;
+    max-width: none;
+  }
+  
+  .speech-bubble:before {
+    left: 50%;
+    top: -20px;
+    transform: translateX(-50%);
+    border-color: transparent transparent #0d47a1 transparent;
+  }
+}
