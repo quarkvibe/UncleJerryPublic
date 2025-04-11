@@ -188,11 +188,10 @@ const UncleJerryDemo: React.FC = () => {
       
       <div className="demo-footer">
         <UncleJerry
-          mood={mood}
+          state={mood as 'idle' | 'talking' | 'thinking' | 'excited' | 'pointing'}
           message={message}
           size="medium"
           position="right"
-          analysisStage={currentStage}
         />
       </div>
     </div>

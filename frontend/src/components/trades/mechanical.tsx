@@ -3,13 +3,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Form, Spinner, Alert } from 'react-bootstrap';
-import { uploadBlueprint, analyzeBlueprint, saveTakeoff } from '../../services/apiService';
-import UncleJerryCharacter from '../../components/UncleJerryCharacter';
-import CostSummary from '../../components/CostSummary';
-import MaterialsList from '../../components/MaterialsList';
-import BlueprintViewer from '../../components/BlueprintViewer';
-import { formatCurrency } from '../../utils/formatters';
+import { 
+  Card, Button, Spin as Spinner, Alert, Form, Input, Select, Row, Col, Typography, Divider, Space
+} from 'antd'; // Changed from react-bootstrap to antd which is already in the project
+import apiService from '../../services/apiService'; // Import the full apiService instead of individual functions
+import { UncleJerry } from '../../components/UncleJerry'; // Use the existing UncleJerry component
+
+// Mock components for now - to be implemented later or replaced with actual components
+const CostSummary = (props: any) => <div>Cost Summary Component</div>;
+const MaterialsList = (props: any) => <div>Materials List Component</div>;
+const BlueprintViewer = (props: any) => <div>Blueprint Viewer Component</div>;
+
+// Mock formatter utility
+const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 import { BlueprintSection, AnalysisResult, HVACComponentType } from '../../types/blueprintTypes';
 
 // HVAC-specific component types
@@ -412,27 +418,25 @@ const HVACBlueprintAnalyzer: React.FC = () => {
                           style={{ height: '200px', objectFit: 'cover' }} 
                         />
                         <Card.Body>
-                          <Form.Group className="mb-2">
-                            <Form.Label>Section Name</Form.Label>
-                            <Form.Control 
+                          <Form.Item label="Section Name" className="mb-2">
+                            <Input 
                               type="text" 
                               value={section.name} 
                               onChange={(e) => updateSection(section.id, { name: e.target.value })} 
                             />
-                          </Form.Group>
-                          <Form.Group className="mb-2">
-                            <Form.Label>System Type</Form.Label>
-                            <Form.Select 
+                          </Form.Item>
+                          <Form.Item label="System Type" className="mb-2">
+                            <Select 
                               value={section.systemType}
-                              onChange={(e) => updateSection(section.id, { 
-                                systemType: e.target.value as HVACSystemType 
+                              onChange={(value) => updateSection(section.id, { 
+                                systemType: value as unknown as HVACSystemType 
                               })}
                             >
                               {Object.values(HVACSystemType).map(type => (
-                                <option key={type} value={type}>{type}</option>
+                                <Select.Option key={type} value={type}>{type}</Select.Option>
                               ))}
-                            </Form.Select>
-                          </Form.Group>
+                            </Select>
+                          </Form.Item>
                           <Button 
                             variant="outline-danger" 
                             size="sm" 

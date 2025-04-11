@@ -18,9 +18,34 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    
+    /* Additional stricter type-checking */
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    
+    /* Module Resolution */
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts"
   ]
 }

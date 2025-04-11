@@ -3,24 +3,22 @@
  * Consolidated API Service for Uncle Jerry Blueprint Analyzer
  * Provides an interface for all server communications
  */
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { Material, LaborItem } from '../types/common';
+import { 
+  User, 
+  LoginCredentials, 
+  RegisterData, 
+  AuthResponse,
+  Project,
+  Blueprint,
+  ApiService 
+} from './api.types';
 
-// Types
-export interface Material {
-  name: string;
-  quantity: number;
-  unit: string;
-  cost?: number;
-  category?: string;
-}
+// Re-export from common types
+export { Material, LaborItem };
 
-export interface LaborItem {
-  task: string;
-  hours: number;
-  rate?: number;
-  cost?: number;
-}
-
+// Analysis result interface
 export interface AnalysisResult {
   materials: Material[];
   labor?: LaborItem[];
@@ -479,6 +477,64 @@ const apiService = {
         assessment: response.data.assessment,
         suggestedTrade: response.data.suggestedTrade
       };
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Analyze blueprints by trade
+   */
+  analyzeBlueprintsByTrade: async (files: File[], trade: string, analysisType: 'takeoff' | 'costEstimate' | 'fullEstimate'): Promise<AnalysisResult> => {
+    try {
+      const formData = new FormData();
+      
+      files.forEach((file, index) => {
+        formData.append('blueprints', file);
+      });
+      
+      formData.append('trade', trade);
+      formData.append('analysisType', analysisType);
+      
+      const response = await apiClient.post('/blueprints/analyze', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data.result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Save project
+   */
+  saveProject: async (userId: string, projectData: {
+    title: string;
+    trade: string;
+    files: File[];
+    results: AnalysisResult;
+  }): Promise<{ projectId: string }> => {
+    try {
+      const formData = new FormData();
+      
+      formData.append('title', projectData.title);
+      formData.append('trade', projectData.trade);
+      formData.append('results', JSON.stringify(projectData.results));
+      
+      projectData.files.forEach((file, index) => {
+        formData.append('files', file);
+      });
+      
+      const response = await apiClient.post(`/projects/user/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return { projectId: response.data.projectId };
     } catch (error) {
       throw error;
     }

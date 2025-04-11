@@ -6,7 +6,7 @@ import {
   CircularProgress, 
   Card, 
   CardContent, 
-  Grid, 
+  Grid as MuiGrid, 
   Divider, 
   Table, 
   TableBody, 
@@ -16,8 +16,12 @@ import {
   TableRow,
   Paper
 } from '@mui/material';
+
 import ConstructionIcon from '@mui/icons-material/Construction';
 import axios from 'axios';
+
+// Create a wrapper around MuiGrid to fix the component prop issue
+const Grid = (props: React.ComponentProps<typeof MuiGrid>) => <MuiGrid {...props} component="div" />;
 
 // Types for our blueprint data and framing analysis
 interface WallSection {
@@ -125,10 +129,22 @@ const FramingAnalyzer: React.FC<FramingProps> = ({
   };
 
   // Convert to material items array for parent component
+  // Define an interface for material items
+  interface FramingMaterialItem {
+    id?: string;
+    category?: string;
+    name: string;
+    quantity: number;
+    unit: string;
+    unitPrice?: number; 
+    totalPrice?: number;
+    cost?: number;
+  }
+  
   const convertToMaterialItems = () => {
     if (!results) return [];
     
-    const items = [];
+    const items: FramingMaterialItem[] = [];
     
     // Add studs
     Object.entries(results.materials.studs).forEach(([type, count]) => {
