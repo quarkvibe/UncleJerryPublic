@@ -102,7 +102,7 @@ export interface RegisterData extends LoginCredentials {
 }
 
 // API Configuration
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_URL = process.env.REACT_APP_API_URL || '/api';  // Changed to relative path for production
 const API_TIMEOUT_MS = parseInt(process.env.REACT_APP_API_TIMEOUT_MS || '30000', 10);
 
 // Feature Flags
@@ -182,7 +182,7 @@ const authApi = {
    */
   register: async (userData: RegisterData): Promise<{ token: string; user: User }> => {
     try {
-      const response = await apiClient.post('/api/auth/register', userData);
+      const response = await apiClient.post('/auth/register', userData);
       
       // Store authentication data
       localStorage.setItem('accessToken', response.data.token);
@@ -199,7 +199,7 @@ const authApi = {
    */
   login: async (credentials: LoginCredentials): Promise<{ token: string; user: User }> => {
     try {
-      const response = await apiClient.post('/api/auth/login', credentials);
+      const response = await apiClient.post('/auth/login', credentials);
       
       // Store authentication data
       localStorage.setItem('accessToken', response.data.token);
@@ -229,7 +229,7 @@ const authApi = {
    */
   getCurrentUser: async (): Promise<User> => {
     try {
-      const response = await apiClient.get('/api/auth/me');
+      const response = await apiClient.get('/auth/me');
       return response.data.user;
     } catch (error) {
       throw error;
@@ -241,7 +241,7 @@ const authApi = {
    */
   updateProfile: async (profileData: Partial<User>): Promise<User> => {
     try {
-      const response = await apiClient.put('/api/auth/profile', profileData);
+      const response = await apiClient.put('/auth/profile', profileData);
       return response.data.user;
     } catch (error) {
       throw error;
@@ -253,7 +253,7 @@ const authApi = {
    */
   changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
     try {
-      await apiClient.put('/api/auth/password', { currentPassword, newPassword });
+      await apiClient.put('/auth/password', { currentPassword, newPassword });
     } catch (error) {
       throw error;
     }
@@ -264,7 +264,7 @@ const authApi = {
    */
   requestPasswordReset: async (email: string): Promise<void> => {
     try {
-      await apiClient.post('/api/auth/forgot-password', { email });
+      await apiClient.post('/auth/forgot-password', { email });
     } catch (error) {
       throw error;
     }
@@ -275,7 +275,7 @@ const authApi = {
    */
   resetPassword: async (token: string, password: string): Promise<void> => {
     try {
-      await apiClient.post('/api/auth/reset-password', { token, password });
+      await apiClient.post('/auth/reset-password', { token, password });
     } catch (error) {
       throw error;
     }
@@ -289,7 +289,7 @@ const projectsApi = {
    */
   createProject: async (projectData: Partial<Project>): Promise<Project> => {
     try {
-      const response = await apiClient.post('/api/projects', projectData);
+      const response = await apiClient.post('/projects', projectData);
       return response.data.project;
     } catch (error) {
       throw error;
@@ -309,7 +309,7 @@ const projectsApi = {
         };
       }
       
-      const response = await apiClient.get(`/api/projects/user/${userId}?limit=${limit}&skip=${skip}`);
+      const response = await apiClient.get(`/projects/user/${userId}?limit=${limit}&skip=${skip}`);
       return {
         projects: response.data.projects,
         total: response.data.pagination.total
@@ -329,7 +329,7 @@ const projectsApi = {
         return getMockProjects(1)[0];
       }
       
-      const response = await apiClient.get(`/api/projects/${projectId}`);
+      const response = await apiClient.get(`/projects/${projectId}`);
       return response.data.project;
     } catch (error) {
       throw error;
@@ -341,7 +341,7 @@ const projectsApi = {
    */
   updateProject: async (projectId: string, projectData: Partial<Project>): Promise<Project> => {
     try {
-      const response = await apiClient.put(`/api/projects/${projectId}`, projectData);
+      const response = await apiClient.put(`/projects/${projectId}`, projectData);
       return response.data.project;
     } catch (error) {
       throw error;
@@ -353,7 +353,7 @@ const projectsApi = {
    */
   deleteProject: async (projectId: string): Promise<void> => {
     try {
-      await apiClient.delete(`/api/projects/${projectId}`);
+      await apiClient.delete(`/projects/${projectId}`);
     } catch (error) {
       throw error;
     }
@@ -374,7 +374,7 @@ const projectsApi = {
         formData.append('pageTypes', JSON.stringify(pageTypes));
       }
       
-      const response = await apiClient.post(`/api/projects/${projectId}/blueprints`, formData, {
+      const response = await apiClient.post(`/projects/${projectId}/blueprints`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -391,7 +391,7 @@ const projectsApi = {
    */
   deleteBlueprint: async (projectId: string, blueprintId: string): Promise<void> => {
     try {
-      await apiClient.delete(`/api/projects/${projectId}/blueprints/${blueprintId}`);
+      await apiClient.delete(`/projects/${projectId}/blueprints/${blueprintId}`);
     } catch (error) {
       throw error;
     }
@@ -401,7 +401,7 @@ const projectsApi = {
    * Get the URL for a blueprint image
    */
   getBlueprintImageUrl: (projectId: string, blueprintId: string): string => {
-    return `${API_URL}/api/projects/${projectId}/blueprints/${blueprintId}/image`;
+    return `${API_URL}/projects/${projectId}/blueprints/${blueprintId}/image`;
   },
   
   /**
@@ -414,7 +414,7 @@ const projectsApi = {
         return { analysisId: 'mock-analysis-123' };
       }
       
-      const response = await apiClient.post(`/api/projects/${projectId}/analyze`, { analysisLevel });
+      const response = await apiClient.post(`/projects/${projectId}/analyze`, { analysisLevel });
       return { analysisId: response.data.analysisId };
     } catch (error) {
       throw error;
@@ -431,7 +431,7 @@ const projectsApi = {
         return getMockAnalysisResult();
       }
       
-      const response = await apiClient.get(`/api/projects/${projectId}/analysis/${analysisId}`);
+      const response = await apiClient.get(`/projects/${projectId}/analysis/${analysisId}`);
       return response.data.analysis;
     } catch (error) {
       throw error;
@@ -444,7 +444,45 @@ const apiService = {
   auth: authApi,
   projects: projectsApi,
   fileToBase64,
-  fileToBlob
+  fileToBlob,
+  
+  /**
+   * Get Uncle Jerry's responses for trade-specific dialogue
+   */
+  getUncleJerryResponse: async (trade: string, situation: string): Promise<string> => {
+    try {
+      const response = await apiClient.post('/uncle-jerry/dialogue', { trade, situation });
+      return response.data.dialogue;
+    } catch (error) {
+      throw error;
+    }
+  },
+  
+  /**
+   * Perform initial assessment of blueprint files
+   */
+  initialAssessment: async (files: File[]): Promise<{ assessment: string, suggestedTrade: string }> => {
+    try {
+      const formData = new FormData();
+      
+      files.forEach((file, index) => {
+        formData.append('blueprints', file);
+      });
+      
+      const response = await apiClient.post('/blueprints/assess', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return {
+        assessment: response.data.assessment,
+        suggestedTrade: response.data.suggestedTrade
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 /**
