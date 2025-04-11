@@ -39,13 +39,17 @@
     "build": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "build:windows": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:watch": "react-scripts test --watch",
+    "test:ci": "react-scripts test --ci --coverage --watchAll=false",
     "eject": "react-scripts eject",
     "analyze": "npm run build && node bundle-analyzer.js",
     "compress": "gzip -9 -k build/static/js/*.js build/static/css/*.css",
     "compress:windows": "powershell -Command \"Get-ChildItem -Path ./build/static/js/*.js,./build/static/css/*.css | ForEach-Object { gzip -9 -k $_.FullName }\"",
     "prebuild": "npm run clean",
     "clean": "rimraf build",
-    "build:full": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts build && npm run compress"
+    "build:full": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts build && npm run compress",
+    "typecheck": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [

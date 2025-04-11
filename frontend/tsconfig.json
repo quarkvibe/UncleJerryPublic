@@ -37,7 +37,11 @@
     }
   },
   "include": [
-    "src"
+    "src",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js", 
+    "src/**/*.jsx"
   ],
   "exclude": [
     "node_modules",
@@ -46,6 +50,6 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "coverage"
   ]
 }
