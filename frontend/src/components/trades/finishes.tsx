@@ -4,7 +4,7 @@ import {
   Button, 
   Typography, 
   Paper, 
-  Grid, 
+  Grid as MuiGrid, 
   CircularProgress, 
   Tabs, 
   Tab, 
@@ -18,6 +18,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
   Accordion,
   AccordionSummary,
@@ -36,6 +40,24 @@ import {
   Calculate as CalculateIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import { 
+  FinishMaterial, 
+  FinishCategory, 
+  FinishAnalysis, 
+  FinishScheduleAnalyzerProps, 
+  FinishAnalysisSettings, 
+  BlueprintImages, 
+  BlueprintImageUrls, 
+  ScaleReference, 
+  FinishesState, 
+  MockAppState 
+} from '../../types/finishes';
+import { GridProps } from '../../types/components/mui';
+
+// Create properly typed Grid component
+const Grid = styled(MuiGrid)<GridProps>(({ theme }) => ({}));
+
 // Mock Redux hooks
 const useAppDispatch = () => (action: any) => {
   console.log('Dispatch:', action);
@@ -58,22 +80,6 @@ const useAppDispatch = () => (action: any) => {
     }
   };
 };
-const useAppSelector = (selector: any) => ({
-  materials: [],
-  isLoading: false,
-  error: null,
-  currentAnalysis: { id: '1' },
-  isAnalyzing: false,
-  takeoff: { materials: [], totalCost: 0 },
-  activeStep: 0,
-  finish: {
-    currentAnalysis: { id: '1' },
-    isAnalyzing: false,
-    error: null,
-    materials: [],
-    takeoff: { materials: [], totalCost: 0 },
-  }
-});
 // Mock Redux actions
 interface AsyncAction {
   type: string;
@@ -91,6 +97,75 @@ const analyzeFinishSchedule: any = (files: any): Promise<AsyncAction> => {
 analyzeFinishSchedule.fulfilled = { match: () => true };
 const updateMaterialItem = (update: any) => ({ type: 'UPDATE_MATERIAL_ITEM', payload: update });
 const exportTakeoff = (options: any) => ({ type: 'EXPORT_TAKEOFF', payload: options });
+
+// Create mock selector function
+const useAppSelector = (selector: (state: MockAppState) => any) => {
+  // Create mock state that matches the FinishAnalysis interface
+  const mockState: MockAppState = {
+    materials: [],
+    isLoading: false,
+    error: null,
+    currentAnalysis: { id: '1' },
+    isAnalyzing: false,
+    takeoff: { materials: [], totalCost: 0 },
+    activeStep: 0,
+    finish: {
+      currentAnalysis: {
+        id: '1',
+        projectName: 'Mock Project',
+        dateAnalyzed: new Date().toISOString(),
+        categories: {
+          floors: [{ 
+            name: 'Example Floor Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }],
+          walls: [{ 
+            name: 'Example Wall Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }],
+          ceilings: [{ 
+            name: 'Example Ceiling Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }],
+          millwork: [{ 
+            name: 'Example Millwork Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }],
+          transitions: [{ 
+            name: 'Example Transitions Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }],
+          specialItems: [{ 
+            name: 'Example Special Items Category', 
+            materials: [], 
+            totalQuantity: 0, 
+            totalCost: 0 
+          }]
+        },
+        totalArea: 1000,
+        totalCost: 0,
+        laborCost: 0,
+        imageUrls: []
+      },
+      isAnalyzing: false,
+      error: null,
+      materials: [],
+      takeoff: { materials: [], totalCost: 0 }
+    }
+  };
+  
+  return selector(mockState);
+};
 // Mock react-dropzone hook
 const useDropzone = (options: any) => ({
   getRootProps: () => ({}),
@@ -101,58 +176,6 @@ const useDropzone = (options: any) => ({
 // Mock ErrorBoundary component
 const ErrorBoundary: React.FC<any> = ({ children }) => <>{children}</>;
 
-// Types
-export interface FinishMaterial {
-  id: string;
-  category: string;
-  material: string;
-  manufacturer: string;
-  product: string;
-  location: string;
-  quantity: number;
-  unit: string;
-  unitPrice?: number;
-  totalPrice?: number;
-  notes?: string;
-  calculationBasis?: string;
-  finishCode?: string;
-}
-
-export interface FinishCategory {
-  name: string;
-  materials: FinishMaterial[];
-  totalQuantity: number;
-  totalCost: number;
-}
-
-export interface FinishAnalysis {
-  id: string;
-  projectName: string;
-  dateAnalyzed: string;
-  categories: {
-    floors: FinishCategory[];
-    walls: FinishCategory[];
-    ceilings: FinishCategory[];
-    millwork: FinishCategory[];
-    transitions: FinishCategory[];
-    specialItems: FinishCategory[];
-  };
-  totalCost: number;
-  totalArea: number;
-  scaleReference?: {
-    referenceLength: number;
-    pixelLength: number;
-    unit: string;
-  };
-  imageUrls: string[];
-}
-
-export interface FinishScheduleAnalyzerProps {
-  projectId: string;
-  onAnalysisComplete?: (analysis: FinishAnalysis) => void;
-  initialData?: FinishAnalysis;
-  isStandalone?: boolean;
-}
 
 const FinishScheduleAnalyzer: React.FC<FinishScheduleAnalyzerProps> = ({
   projectId,
@@ -169,30 +192,18 @@ const FinishScheduleAnalyzer: React.FC<FinishScheduleAnalyzerProps> = ({
 
   // Local state
   const [activeTab, setActiveTab] = useState<number>(0);
-  const [scaleReference, setScaleReference] = useState<{
-    referenceLength: number;
-    pixelLength: number;
-    unit: string;
-  }>({ referenceLength: 0, pixelLength: 0, unit: 'ft' });
-  const [blueprintImages, setBlueprintImages] = useState<{
-    floorPlan?: File;
-    finishSchedule?: File;
-    finishPlan?: File;
-    details?: File[];
-  }>({
+  const [scaleReference, setScaleReference] = useState<ScaleReference>(
+    { referenceLength: 0, pixelLength: 0, unit: 'ft' }
+  );
+  const [blueprintImages, setBlueprintImages] = useState<BlueprintImages>({
     details: []
   });
-  const [blueprintImageUrls, setBlueprintImageUrls] = useState<{
-    floorPlan?: string;
-    finishSchedule?: string;
-    finishPlan?: string;
-    details: string[];
-  }>({
+  const [blueprintImageUrls, setBlueprintImageUrls] = useState<BlueprintImageUrls>({
     details: []
   });
   const [editingMaterial, setEditingMaterial] = useState<string | null>(null);
   const [showScaleDialog, setShowScaleDialog] = useState<boolean>(false);
-  const [analysisSettings, setAnalysisSettings] = useState({
+  const [analysisSettings, setAnalysisSettings] = useState<FinishAnalysisSettings>({
     includeWasteFactor: true,
     wasteFactorPercentage: 10,
     defaultCeilingHeight: 10,
@@ -336,7 +347,7 @@ const FinishScheduleAnalyzer: React.FC<FinishScheduleAnalyzerProps> = ({
   };
 
   // Handle scale reference setting
-  const setScale = (length: number, pixels: number, unit: string) => {
+  const setScale = (length: number, pixels: number, unit: string): void => {
     setScaleReference({
       referenceLength: length,
       pixelLength: pixels,
@@ -355,7 +366,7 @@ const FinishScheduleAnalyzer: React.FC<FinishScheduleAnalyzerProps> = ({
             
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {/* Floor Plan Upload */}
-              <Grid item xs={12} sm={6}>
+              <Grid component="div" item xs={12} sm={6}>
                 <Paper 
                   {...getFloorPlanRootProps()} 
                   elevation={3} 

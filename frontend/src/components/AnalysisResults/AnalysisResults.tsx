@@ -1,40 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
+import { AnalysisResultsProps, AnalysisResult, Material, LaborItem } from '../../types/components';
 import './styles.css';
-
-interface Material {
-  name: string;
-  quantity: number;
-  unit: string;
-  cost?: number;
-}
-
-interface LaborItem {
-  task: string;
-  hours: number;
-  rate?: number;
-  cost?: number;
-}
-
-interface AnalysisResult {
-  materials?: Material[];
-  labor?: LaborItem[];
-  totalMaterialCost?: number;
-  totalLaborCost?: number;
-  totalCost?: number;
-  project_name?: string;
-  permit_cost?: number;
-  equipment_cost?: number;
-  notes?: string;
-}
-
-interface AnalysisResultsProps {
-  results: AnalysisResult;
-  blueprintImage?: string;
-  trade: string;
-  isLoading?: boolean;
-  onSave?: () => void;
-  onNewAnalysis?: () => void;
-}
 
 const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   results,

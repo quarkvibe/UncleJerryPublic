@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext } from 'react';
+import { ContextProviderProps } from '../types/components';
 
 interface TradeContextType {
   selectedTrade: string;
@@ -12,11 +13,7 @@ const TradeContext = createContext<TradeContextType>({
 
 export const useTrade = () => useContext(TradeContext);
 
-interface TradeProviderProps {
-  children: ReactNode;
-}
-
-export const TradeProvider: React.FC<TradeProviderProps> = ({ children }) => {
+export const TradeProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [selectedTrade, setSelectedTrade] = useState<string>('');
 
   return (

@@ -1,54 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { UncleJerryProps, UncleJerryMood, SpeechEffect, QueuedMessage } from '../../types/components';
 import './styles.css';
 import UncleJerrySVG from './UncleJerrySVG';
-
-interface InteractionPoint {
-  x: number;
-  y: number;
-  tooltip: string;
-  onClick: () => void;
-}
-
-// Speech bubble effects
-type SpeechEffect = 'normal' | 'thinking' | 'excited' | 'warning' | 'technical';
-
-// Message queue for handling complex interactions
-interface QueuedMessage {
-  content: string;
-  effect?: SpeechEffect;
-  duration?: number; // How long should the message be displayed (ms)
-  onComplete?: () => void;
-}
-
-export interface UncleJerryProps {
-  // Character state
-  state: 'idle' | 'talking' | 'thinking' | 'excited' | 'pointing' | 'confused' | 'concerned' | 'approving';
-  
-  // Content
-  message?: string;
-  messageEffect?: SpeechEffect;
-  messageQueue?: QueuedMessage[];
-  
-  // Interaction
-  onMessageComplete?: () => void;
-  interactionPoints?: InteractionPoint[];
-  onCharacterClick?: () => void;
-  
-  // User progress
-  userProgress?: number;
-  
-  // Appearance
-  size?: 'small' | 'medium' | 'large';
-  position?: 'left' | 'right' | 'center';
-  pointingDirection?: 'left' | 'right' | 'up' | 'down' | 'none';
-  
-  // Animation
-  typingSpeed?: number; // ms per character
-  isAnimated?: boolean;
-  
-  // Accessibility
-  ariaLabel?: string;
-}
 
 const UncleJerry: React.FC<UncleJerryProps> = ({
   state = 'idle',
@@ -150,7 +103,7 @@ const UncleJerry: React.FC<UncleJerryProps> = ({
   }, [state, isAnimated]);
   
   // Get appropriate mood for state
-  const getMood = () => {
+  const getMood = (): UncleJerryMood => {
     switch(state) {
       case 'talking': return 'explaining';
       case 'thinking': return 'thinking';

@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
-interface UncleJerrySVGProps {
-  mood?: 'happy' | 'thinking' | 'explaining' | 'surprised' | 'excited' | 'confused' | 'concerned' | 'approving';
-  className?: string;
-  isAnimated?: boolean;
-  pointingDirection?: 'left' | 'right' | 'up' | 'down' | 'none';
-}
+import { UncleJerrySVGProps, UncleJerryMood } from '../../types/components';
 
 const UncleJerrySVG: React.FC<UncleJerrySVGProps> = ({ 
   mood = 'happy', 

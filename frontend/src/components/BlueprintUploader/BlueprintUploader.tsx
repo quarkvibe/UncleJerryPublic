@@ -1,19 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { BlueprintUploaderProps } from '../../types/components';
 import './styles.css';
-
-interface BlueprintUploaderProps {
-  onFileChange?: (file: File) => void;
-  onTradeChange?: (trade: string) => void;
-  isUploading?: boolean;
-  acceptedFileTypes?: string;
-  trade?: string;
-  onUpload: (file: File) => void;
-  isAnalyzing?: boolean;
-  label?: string;
-  multiple?: boolean;
-  maxSizeInMB?: number;
-  resetKey?: number;
-}
 
 const BlueprintUploader: React.FC<BlueprintUploaderProps> = ({
   onFileChange,

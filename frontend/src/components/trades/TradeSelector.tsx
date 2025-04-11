@@ -1,9 +1,6 @@
 import React from 'react';
 import { useTrade } from '../../contexts/TradeContext';
-
-interface TradeSelectorProps {
-  onTradeChange?: (trade: string) => void;
-}
+import { TradeSelectorProps } from '../../types/components';
 
 const TradeSelector: React.FC<TradeSelectorProps> = ({ onTradeChange }) => {
   const { selectedTrade, setSelectedTrade } = useTrade();
